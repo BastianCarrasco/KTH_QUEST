@@ -1,0 +1,12 @@
+<div v-else class="resumen-container">
+  <h2>Progreso por categoría</h2>
+  
+  <div v-for="(nivel, categoria) in nivelesPorCategoria" :key="categoria" class="categoria-nivel">
+    <h3>{{ categoria }}</h3>
+    <p v-if="nivel > 0">✅ Nivel completado: <strong>{{ nivel }}</strong></p>
+    <p v-else>❌ No completaste ningún nivel</p>
+  </div>
+
+  <button @click="showSummary = false" class="back-btn">Volver al formulario</button>
+  
+</div>

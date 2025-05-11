@@ -1,0 +1,35 @@
+.resumen-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.chart-container {
+  margin: 20px auto;
+  max-width: 500px;
+}
+
+.categoria-nivel {
+  margin: 15px 0;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.back-btn, .dashboard-btn {
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-btn {
+  background-color: #f0f0f0;
+}
+
+.dashboard-btn {
+  background-color: #42b983;
+  color: white;
+}
