@@ -168,5 +168,162 @@ const handleSubmit = async () => {
 </template>
 
 <style scoped>
-/* Estilos igual que en la versión anterior */
+.auth-container {
+  max-width: 420px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+}
+
+h1 {
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+label {
+  font-size: 0.95rem;
+  color: #4a5568;
+  font-weight: 500;
+  margin-left: 0.2rem;
+}
+
+input {
+  padding: 0.9rem 1.2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+input:hover {
+  border-color: #c7d2fe;
+}
+
+input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  background-color: #ffffff;
+}
+
+input::placeholder {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.error-message {
+  color: #dc2626;
+  background-color: #fef2f2;
+  padding: 0.9rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0.5rem 0;
+  border: 1px solid #fecaca;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.submit-btn {
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.8rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 5px rgba(99, 102, 241, 0.2);
+}
+
+.submit-btn:hover {
+  background-color: #4f46e5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 3px rgba(79, 70, 229, 0.3);
+}
+
+.submit-btn:disabled {
+  background-color: #c7d2fe;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.switch-mode-btn {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  margin-top: 1.8rem;
+  padding: 0.6rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.switch-mode-btn:hover {
+  color: #4f46e5;
+  background-color: #f8fafc;
+  text-decoration: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .auth-container {
+    margin: 1rem;
+    padding: 1.8rem;
+    border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 1.8rem;
+  }
+  
+  input {
+    padding: 0.8rem 1rem;
+  }
+  
+  .submit-btn {
+    padding: 0.9rem;
+  }
+}
 </style>
