@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted,computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import '../assets/formulario.css';
@@ -13,6 +13,36 @@ const isLoading = ref(true);
 const error = ref(null);
 const showSummary = ref(false);
 const respuestasEnviadas = ref({});
+const niveles = ref([]);
+
+// Obtener todas las alternativas seleccionadas (IDs)
+const alternativasSeleccionadas = computed(() => {
+  return Object.values(respuestasEnviadas.value).flat();
+});
+
+const nivelesPorCategoria = computed(() => {
+  const categoriasUnicas = [...new Set(niveles.value.map(n => n.nombre_categoria))];
+  const resultado = {};
+
+  categoriasUnicas.forEach(categoria => {
+    // Filtrar niveles de esta categoría (ordenados de mayor a menor nivel)
+    const nivelesCategoria = niveles.value
+      .filter(n => n.nombre_categoria === categoria)
+      .sort((a, b) => b.nivel - a.nivel); // Orden descendente
+
+    // Buscar el PRIMER nivel donde TODAS sus alternativas estén seleccionadas
+    const nivelAlcanzado = nivelesCategoria.find(nivel => {
+      const alternativasNivel = nivel.ids_alternativas.split(',').map(Number);
+      return alternativasNivel.every(altId => 
+        alternativasSeleccionadas.value.includes(altId)
+      );
+    });
+
+    resultado[categoria] = nivelAlcanzado ? nivelAlcanzado.nivel : 0;
+  });
+
+  return resultado;
+});
 
 // Obtener datos de la API
 const fetchData = async () => {
@@ -28,11 +58,15 @@ const fetchData = async () => {
     // Obtener alternativas
     const alternativasResponse = await axios.get('https://kth2025backend-production.up.railway.app/alternativas');
     alternativas.value = alternativasResponse.data.data;
-    
+
+     // Obtener alternativas
+    const nivelesreponse = await axios.get('https://kth2025backend-production.up.railway.app/niveles');
+    niveles.value = nivelesreponse.data.data;   
     console.log('Datos cargados:', {
       categorias: categorias.value,
       preguntas: preguntas.value,
-      alternativas: alternativas.value
+      alternativas: alternativas.value,
+      niveles: niveles.value
     });
     
     // Inicializar objeto de respuestas con arrays vacíos
@@ -142,25 +176,18 @@ onMounted(() => {
         <button type="submit" class="submit-btn">Enviar Respuestas</button>
       </form>
       
-      <div v-else class="resumen-container">
-        <h2>Resumen de Respuestas</h2>
-        <div v-for="(alternativasIds, preguntaId) in respuestasEnviadas" :key="preguntaId" class="resumen-item">
-          <h3>Pregunta ID: {{ preguntaId }}</h3>
-          <p>Alternativas seleccionadas: {{ alternativasIds.join(', ') }}</p>
-          
-          <div class="detalle-alternativas">
-            <h4>Detalle de alternativas:</h4>
-            <ul>
-              <li v-for="altId in alternativasIds" :key="altId">
-                ID {{ altId }}: {{ alternativas.find(a => a.id === altId)?.texto }}
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        <button @click="showSummary = false" class="back-btn">Volver al formulario</button>
-        <button @click="router.push('/dashboard')" class="dashboard-btn">Ir al Dashboard</button>
-      </div>
+<div v-else class="resumen-container">
+  <h2>Progreso por categoría</h2>
+  
+  <div v-for="(nivel, categoria) in nivelesPorCategoria" :key="categoria" class="categoria-nivel">
+    <h3>{{ categoria }}</h3>
+    <p v-if="nivel > 0">✅ Nivel completado: <strong>{{ nivel }}</strong></p>
+    <p v-else>❌ No completaste ningún nivel</p>
+  </div>
+
+  <button @click="showSummary = false" class="back-btn">Volver al formulario</button>
+  <button @click="router.push('/dashboard')" class="dashboard-btn">Ir al Dashboard</button>
+</div>
     </template>
   </div>
 </template>
