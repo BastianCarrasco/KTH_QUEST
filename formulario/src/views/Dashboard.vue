@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import '../assets/formulario.css';
+import BarChart from '@/components/BarChart.vue';
 
 const router = useRouter();
 const categorias = ref([]);
@@ -15,10 +16,10 @@ const showSummary = ref(false);
 const respuestasEnviadas = ref({});
 const niveles = ref([]);
 const nivelesInsertar = ref({}); // Objeto para almacenar los niveles a insertar
-
+const props = defineProps(['nivelesPorCategoria'])
 const userEmail = ref('');
 const userId = ref(null);
-const clavesRespuestas = ref(null); // Lo definimos como null según tu requerimiento
+
 
 // Obtener todas las alternativas seleccionadas (IDs)
 const alternativasSeleccionadas = computed(() => {
@@ -214,39 +215,33 @@ onMounted(() => {
       </form>
 
       <div v-else class="resumen-container">
-        <h2>Resumen de tu evaluación</h2>
+    <h2 class="titulo-resumen">🎓 Resumen de tu Evaluación</h2>
 
-        <!-- Información del usuario -->
-        <div class="user-info" v-if="userId">
-          <p><strong>ID de usuario:</strong> {{ userId }}</p>
-          <p><strong>Nombre:</strong> {{ userName }}</p>
-          <p><strong>Email:</strong> {{ userEmail }}</p>
-        </div>
+    <h3 class="subtitulo-categoria">📊 Progreso por Categoría</h3>
 
-        <h3>Progreso por categoría</h3>
+    <div
+      v-for="(nivel, categoria) in nivelesPorCategoria"
+      :key="categoria"
+      class="tarjeta-categoria"
+    >
+      <h4 class="nombre-categoria">{{ categoria }}</h4>
+      <p v-if="nivel > 0" class="nivel-completado">
+        ✅ Nivel completado: <strong>{{ nivel }}</strong>
+      </p>
+      <p v-else class="nivel-no-completado">
+        ❌ No completaste ningún nivel
+      </p>
+    </div>
 
-        <div v-for="(nivel, categoria) in nivelesPorCategoria" :key="categoria" class="categoria-nivel">
-          <h4>{{ categoria }}</h4>
-          <p v-if="nivel > 0">✅ Nivel completado: <strong>{{ nivel }}</strong></p>
-          <p v-else>❌ No completaste ningún nivel</p>
-        </div>
-
-        
-
-        <div class="datos-envio">
-          <h4>Datos que se enviarán:</h4>
-          <pre>{{
-            {
-              id_user: userId,
-              claves_resp: null,
-              nivelesPorCategoria,
-            }
-          }}</pre>
-        </div>
-
-        <button @click="showSummary = false" class="back-btn">Volver al formulario</button>
-        <button @click="enviarDatos" class="send-btn">Enviar resultados</button>
-      </div>
+    <div class="botones-acciones">
+      <button @click="showSummary = false" class="btn-volver">
+        🔙 Volver al formulario
+      </button>
+      <button @click="enviarDatos" class="btn-enviar">
+        📤 Enviar resultados
+      </button>
+    </div>
+  </div>
     </template>
   </div>
 </template>
@@ -287,4 +282,92 @@ user-info {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+.resumen-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.titulo-resumen {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.subtitulo-categoria {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.tarjeta-categoria {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-left: 5px solid #007bff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: transform 0.2s;
+}
+
+.tarjeta-categoria:hover {
+  transform: scale(1.02);
+}
+
+.nombre-categoria {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #007bff;
+}
+
+.nivel-completado {
+  color: green;
+  font-weight: bold;
+}
+
+.nivel-no-completado {
+  color: red;
+  font-weight: bold;
+}
+
+.botones-acciones {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.btn-volver,
+.btn-enviar {
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-volver {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.btn-volver:hover {
+  background-color: #d5d5d5;
+}
+
+.btn-enviar {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-enviar:hover {
+  background-color: #0056b3;
+}
+
 </style>
