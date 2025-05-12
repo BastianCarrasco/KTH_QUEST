@@ -112,18 +112,19 @@ const alternativasPorPregunta = (preguntaId) => {
 
 const enviarDatos = async () => {
   try {
+    // Crear el objeto de datos a enviar
     const datosAEnviar = {
       id_user: Number(userId.value),
-      claves_resp: "", // Envía string vacío en lugar de null
-      crl: Number(nivelesPorCategoria.CRL) || 0,
-      trl: Number(nivelesPorCategoria.TRL) || 0,
-      team: Number(nivelesPorCategoria.TEAM) || 0,
-      brl: Number(nivelesPorCategoria.BRL) || 0,
-      frl: Number(nivelesPorCategoria.FRL) || 0,
-      iprl: Number(nivelesPorCategoria.IPRL) || 0,
+      claves_resp: "", // String vacío como indicaste
+      crl: Number(nivelesPorCategoria.value.CRL) || 0,
+      team: Number(nivelesPorCategoria.value.TEAM) || 0,
+      brl: Number(nivelesPorCategoria.value.BRL) || 0,
+      iprl: Number(nivelesPorCategoria.value.IPRL) || 0,
+      frl: Number(nivelesPorCategoria.value.FRL) || 0,
+      trl: Number(nivelesPorCategoria.value.TRL) || 0
     };
 
-    console.log("Datos a enviar:", datosAEnviar);
+    console.log("Datos a enviar:", nivelesPorCategoria.value.CRL);
 
     const response = await axios.post(
       "https://kth2025backend-production.up.railway.app/respuestas",
@@ -131,11 +132,15 @@ const enviarDatos = async () => {
       { headers: { "Content-Type": "application/json" } }
     );
 
-    console.log("Datos enviados:", response.data);
-    alert("¡Datos guardados!");
+    console.log("Respuesta del servidor:", response.data);
+    alert("¡Datos guardados correctamente!");
   } catch (err) {
-    console.error("Error completo:", err.response?.data || err.message);
-    alert(`Error: ${err.response?.data?.message || "Fallo al enviar"}`);
+    console.error("Error completo:", {
+      request: err.config?.data,
+      response: err.response?.data,
+      message: err.message
+    });
+    alert(`Error: ${err.response?.data?.message || err.message}`);
   }
 };
 
@@ -225,6 +230,8 @@ onMounted(() => {
           <p v-if="nivel > 0">✅ Nivel completado: <strong>{{ nivel }}</strong></p>
           <p v-else>❌ No completaste ningún nivel</p>
         </div>
+
+        
 
         <div class="datos-envio">
           <h4>Datos que se enviarán:</h4>
