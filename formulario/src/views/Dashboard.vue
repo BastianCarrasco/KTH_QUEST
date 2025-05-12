@@ -40,9 +40,9 @@ const nivelesPorCategoria = computed(() => {
     });
 
     resultado[categoria] = nivelAlcanzado ? nivelAlcanzado.nivel : 0;
-    
+
     // Mapeo de categorías a las columnas de la tabla
-    switch(categoria) {
+    switch (categoria) {
       case 'Competencias de Resiliencia Laboral':
         nivelesInsertar.value.crl = nivelAlcanzado ? nivelAlcanzado.nivel : 0;
         break;
@@ -113,28 +113,29 @@ const alternativasPorPregunta = (preguntaId) => {
 const enviarDatos = async () => {
   try {
     const datosAEnviar = {
-      id_user: userId.value,
-      claves_resp: null, // Siempre será null según lo indicado
-      ...nivelesInsertar.value // Esto debe contener crl, trl, team, brl, frl, iprl
+      id_user: Number(userId.value),
+      claves_resp: "", // Envía string vacío en lugar de null
+      crl: Number(nivelesPorCategoria.CRL) || 0,
+      trl: Number(nivelesPorCategoria.TRL) || 0,
+      team: Number(nivelesPorCategoria.TEAM) || 0,
+      brl: Number(nivelesPorCategoria.BRL) || 0,
+      frl: Number(nivelesPorCategoria.FRL) || 0,
+      iprl: Number(nivelesPorCategoria.IPRL) || 0,
     };
 
-    // Asegúrate que todos los campos requeridos estén presentes
-    const camposRequeridos = ['crl', 'trl', 'team', 'brl', 'frl', 'iprl'];
-    camposRequeridos.forEach(campo => {
-      if (datosAEnviar[campo] === undefined) {
-        datosAEnviar[campo] = 0; // Asignar 0 si no está definido
-      }
-    });
+    console.log("Datos a enviar:", datosAEnviar);
 
-    const response = await axios.post('https://kth2025backend-production.up.railway.app/respuestas', datosAEnviar);
-    
-    console.log('Respuesta del servidor:', response.data);
-    alert('Datos enviados correctamente');
-    return response.data;
+    const response = await axios.post(
+      "https://kth2025backend-production.up.railway.app/respuestas",
+      datosAEnviar,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    console.log("Datos enviados:", response.data);
+    alert("¡Datos guardados!");
   } catch (err) {
-    console.error('Error:', err);
-    alert('Hubo un error al enviar los datos');
-    throw err;
+    console.error("Error completo:", err.response?.data || err.message);
+    alert(`Error: ${err.response?.data?.message || "Fallo al enviar"}`);
   }
 };
 
@@ -147,13 +148,13 @@ const submitForm = async () => {
 
     // Calcular niveles por categoría (se actualiza automáticamente por el computed)
     console.log('Niveles por categoría:', nivelesPorCategoria.value);
-    
+
     // Mostrar resumen
     showSummary.value = true;
 
     // Opcional: enviar datos automáticamente al mostrar el resumen
     // await enviarDatos();
-    
+
   } catch (err) {
     error.value = 'Error al enviar el formulario';
     console.error(err);
@@ -207,39 +208,38 @@ onMounted(() => {
         <button type="submit" class="submit-btn">Enviar Respuestas</button>
       </form>
 
-     <div v-else class="resumen-container">
-      <h2>Resumen de tu evaluación</h2>
+      <div v-else class="resumen-container">
+        <h2>Resumen de tu evaluación</h2>
 
-      <!-- Información del usuario -->
-      <div class="user-info" v-if="userId">
-        <p><strong>ID de usuario:</strong> {{ userId }}</p>
-        <p><strong>Nombre:</strong> {{ userName }}</p>
-        <p><strong>Email:</strong> {{ userEmail }}</p>
+        <!-- Información del usuario -->
+        <div class="user-info" v-if="userId">
+          <p><strong>ID de usuario:</strong> {{ userId }}</p>
+          <p><strong>Nombre:</strong> {{ userName }}</p>
+          <p><strong>Email:</strong> {{ userEmail }}</p>
+        </div>
+
+        <h3>Progreso por categoría</h3>
+
+        <div v-for="(nivel, categoria) in nivelesPorCategoria" :key="categoria" class="categoria-nivel">
+          <h4>{{ categoria }}</h4>
+          <p v-if="nivel > 0">✅ Nivel completado: <strong>{{ nivel }}</strong></p>
+          <p v-else>❌ No completaste ningún nivel</p>
+        </div>
+
+        <div class="datos-envio">
+          <h4>Datos que se enviarán:</h4>
+          <pre>{{
+            {
+              id_user: userId,
+              claves_resp: null,
+              nivelesPorCategoria,
+            }
+          }}</pre>
+        </div>
+
+        <button @click="showSummary = false" class="back-btn">Volver al formulario</button>
+        <button @click="enviarDatos" class="send-btn">Enviar resultados</button>
       </div>
-
-      <h3>Progreso por categoría</h3>
-
-      <div v-for="(nivel, categoria) in nivelesPorCategoria" :key="categoria" class="categoria-nivel">
-        <h4>{{ categoria }}</h4>
-        <p v-if="nivel > 0">✅ Nivel completado: <strong>{{ nivel }}</strong></p>
-        <p v-else>❌ No completaste ningún nivel</p>
-      </div>
-
-      <div class="datos-envio">
-  <h4>Datos que se enviarán:</h4>
-  <pre>{{
-    {
-      id_user: userId,
-      claves_resp: null,
-      ...nivelesInsertar,
-
-    }
-  }}</pre>
-</div>
-
-      <button @click="showSummary = false" class="back-btn">Volver al formulario</button>
-      <button @click="enviarDatos" class="send-btn">Enviar resultados</button>
-    </div>
     </template>
   </div>
 </template>
